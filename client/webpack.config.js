@@ -3,8 +3,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
-  // mode: "production",
-  mode: "development",
+  mode: "production",
+  // mode: "development",
   entry: "./src/index.js",
   // The above is optional; that's the default entry anyway
   output: {
