@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
-  mode: "development",
+  mode: "production",
   entry: "./src/index.js",
   // The above is optional; that's the default entry anyway
   output: {
@@ -20,6 +20,9 @@ module.exports = {
     hot: true, // Hot reloading
     compress: true, // Optimization
     historyApiFallback: true,
+    proxy: {
+      "/api": "http://localhost:5000",
+    },
   },
 
   module: {
