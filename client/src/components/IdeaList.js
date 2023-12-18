@@ -1,12 +1,19 @@
 import IdeasApi from "../services/ideasApi";
 
 class IdeaList {
+  static _card = null;
+
   constructor() {
     this._ideaListEl = document.querySelector("#idea-list");
-    this._card = this._ideaListEl.firstElementChild;
-    this._ideaListEl.removeChild(this._card);
-    while (this._ideaListEl.firstElementChild)
-      this._ideaListEl.removeChild(this._ideaListEl.firstElementChild);
+    if (IdeaList._card === null) {
+      IdeaList._card = this._ideaListEl.firstElementChild;
+      // console.log(this._ideaListEl);
+      this._ideaListEl.removeChild(IdeaList._card);
+      // console.log(IdeaList._card);
+      // console.log(this._ideaListEl);
+      while (this._ideaListEl.firstElementChild)
+        this._ideaListEl.removeChild(this._ideaListEl.firstElementChild);
+    }
     this._ideas = [];
     this.getIdeas();
 
@@ -32,6 +39,11 @@ class IdeaList {
     }
   }
 
+  addIdeaToList(idea) {
+    this._ideas.push(idea);
+    this.render();
+  }
+
   getTagClass(tag) {
     tag = tag.toLowerCase();
     return this._validTags.has(tag) ? "tag-" + tag : "tag";
@@ -39,7 +51,7 @@ class IdeaList {
 
   render() {
     for (let idea of this._ideas) {
-      const card = this._card.cloneNode(true);
+      const card = IdeaList._card.cloneNode(true);
       card.querySelector("h3").textContent = idea.text;
       //   card.querySelector(".tag").textContent = idea.tag.toUpperCase();
       card.querySelector(".date").textContent = idea.date;
