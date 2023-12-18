@@ -17,14 +17,6 @@ router.get("/", async (req, res) => {
 
 // Get single idea
 router.get("/:id", async (req, res) => {
-  //   res.json({ success: true, data: req.params.id });
-  // const idea = ideas.find((idea) => idea.id === +req.params.id);
-  //   if (!idea) {
-  //   return res
-  //     .status(404)
-  //     .json({ success: false, error: "Resource not found" });
-  // }
-  // res.json({ success: true, data: idea });
   try {
     const idea = await Idea.findById(req.params.id);
     res.json({ success: true, data: idea });
@@ -33,30 +25,6 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ success: false, error: "Something went wrong" });
   }
 });
-
-// const ideas = [
-//   {
-//     id: 1,
-//     text: "Positive NewsLetter, a newsletter that only shares positive, uplifting news",
-//     tag: "Technology",
-//     username: "TonyStark",
-//     date: "2022-01-02",
-//   },
-//   {
-//     id: 2,
-//     text: "Milk cartons that turn a different color the older that your milk is getting",
-//     tag: "Inventions",
-//     username: "SteveRogers",
-//     date: "2022-01-02",
-//   },
-//   {
-//     id: 3,
-//     text: "ATM location app which lets you know where the closest ATM is and if it is in service",
-//     tag: "Software",
-//     username: "BruceBanner",
-//     date: "2022-01-02",
-//   },
-// ];
 
 // Add an idea
 router.post("/", async (req, res) => {
@@ -86,58 +54,55 @@ router.post("/", async (req, res) => {
 
 // Update idea
 router.put("/:id", async (req, res) => {
-  //   res.json({ success: true, data: req.params.id });
-  // const idea = ideas.find((idea) => idea.id === +req.params.id);
-  // if (!idea) {
-  //   return res
-  //     .status(404)
-  //     .json({ success: false, error: "Resource not found" });
-  // }
+  // console.log(req.params);
+  // console.log(req.query);
 
-  // idea.text = req.body.text || idea.text;
-  // idea.tag = req.body.tag || idea.tag;
-
-  // res.json({ success: true, data: idea });
   try {
-    console.log(req);
-    // console.log(res);
-    const updatedIdea = await Idea.findByIdAndUpdate(
-      req.params.id,
-      {
-        $set: {
-          text: req.query.text,
-          tag: req.query.tag,
+    const idea = await Idea.findById(req.params.id);
+    if (idea.username === req.body.username) {
+      // console.log(req.params);
+      // console.log(req.query);
+      // console.log(req.body);
+      const updatedIdea = await Idea.findByIdAndUpdate(
+        req.params.id,
+        {
+          $set: {
+            text: req.body.text,
+            tag: req.body.tag,
+          },
         },
-      },
-      { new: true }
-    );
-    res.json({ success: true, data: updatedIdea });
-  } catch {
+        { new: true }
+      );
+      return res.json({ success: true, data: updatedIdea });
+    }
+    // Usernames do not match
+    res.status(403).json({
+      success: false,
+      error: "You are not authorized to update this resource",
+    });
+  } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, error: "Something went wrong" });
   }
 });
 
 router.delete("/:id", async (req, res) => {
-  //   res.json({ success: true, data: req.params.id });
-  // const index = ideas.findIndex((idea) => idea.id === +req.params.id);
-  // if (!index) {
-  //   return res
-  //     .status(404)
-  //     .json({ success: false, error: "Resource not found" });
-  // }
-  // const idea = ideas[index];
-  // ideas.splice(index, 1);
-
-  // console.log(req.params);
-
   try {
-    await Idea.findByIdAndDelete(req.params.id);
-    res.json({ success: true, data: {} });
+    const idea = await Idea.findById(req.params.id);
+
+    // Match the usernames
+    if (idea.username === req.body.username) {
+      await Idea.findByIdAndDelete(req.params.id);
+      return res.json({ success: true, data: {} });
+    }
+
+    // Usernames do not match
+    res.status(403).json({
+      success: false,
+      error: "You are not authorized to delete this resource",
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, error: "Something went wrong" });
   }
-
-  // res.json({ success: true, data: idea });
 });
