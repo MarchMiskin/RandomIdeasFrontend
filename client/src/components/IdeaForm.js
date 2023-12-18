@@ -17,20 +17,37 @@ class IdeaForm {
     e.preventDefault();
     // console.log("SUBMIT");
 
-    const idea = {
-      text: this._form.elements.text.value,
-      // After the element comes the name of the element
-      tag: this._form.elements.tag.value,
-      username: this._form.elements.username.value,
-    };
+    if (
+      !this._form.elements.text.value ||
+      !this._form.elements.tag.value ||
+      !this._form.elements.username.value
+    ) {
+      alert("Please enter all fields");
+    }
+    // console.log("1");
+    else {
+      // Save user to local storage
+      localStorage.setItem("username", this._form.elements.username.value);
 
-    // console.log(idea);
+      const idea = {
+        text: this._form.elements.text.value,
+        // After the element comes the name of the element
+        tag: this._form.elements.tag.value,
+        username: this._form.elements.username.value,
+      };
+      // console.log("2");
 
-    // Add idea to server
-    const newIdea = await ideasApi.createIdea(idea);
+      // console.log(idea);
 
-    // Add idea to list
-    this._ideaList.addIdeaToList(newIdea.data.data);
+      // Add idea to server
+
+      const newIdea = await ideasApi.createIdea(idea);
+      // console.log("3");
+
+      // Add idea to list
+      this._ideaList.addIdeaToList(newIdea.data.data);
+    }
+    // console.log("4");
 
     // Clear fields
     this._form.elements.text.value =
@@ -38,21 +55,28 @@ class IdeaForm {
       this._form.elements.username.value =
         "";
 
+    this.render();
+    // console.log("5");
+
     document.dispatchEvent(new Event("closemodal"));
+    // console.log("6");
   }
 
   render() {
     // this._formModal.innerHTML =
-    this._formModal.appendChild(this._formModel.cloneNode(true));
+    const newForm = this._formModel.cloneNode(true);
+    // console.log(newForm.querySelector("#username"));
+    // console.log(localStorage.getItem("username"));
+    newForm.querySelector("#username").value = localStorage.getItem("username")
+      ? localStorage.getItem("username")
+      : "";
+    if (this._formModal.firstElementChild)
+      this._formModal.removeChild(this._formModal.firstElementChild);
+    // console.log(newForm.querySelector("#username"));
+    this._formModal.appendChild(newForm);
     this._form = this._formModal.querySelector("#idea-form");
     this.addEventListeners();
   }
 }
-
-// Why are we doing this?  I don't know!
-// Granted, I'm doing it differently than he did; he just chopped it out
-// of the HTML file entirely and stuck it all in a string in the
-// render function, but... what's the point of that?
-// I think I'd rather have the HTML in the HTML file...
 
 export default IdeaForm;
